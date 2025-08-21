@@ -1,25 +1,42 @@
-import { createServerSupabaseClient } from "@/lib/supabaseServer";
+// api/posts
+
+import { createClient } from "@/lib/supabaseServer";
 import { NextResponse } from "next/server";
 import { createPostSchema } from "@/schemas/post";
 
 export async function GET(req: Request) {
-  const supabase = await createServerSupabaseClient();
-
+  const supabase = await createClient();
   const { searchParams } = new URL(req.url);
-  const page = parseInt(searchParams.get("page") || "1");
-  const limit = parseInt(searchParams.get("limit") || "10");
+
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const limit = parseInt(searchParams.get("limit") || "10", 10);
 
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 
   try {
+    // get current user
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // fetch posts with author + likes
     const { data, error, count } = await supabase
       .from("posts")
       .select(
-        "*, profiles!posts_author_id_fkey(id, username, name, profile_url, is_verified)",
-        {
-          count: "exact",
-        }
+        `
+        id,
+        content,
+        created_at,
+        updated_at,
+        profiles!posts_author_id_fkey(id, username, name, profile_url, is_verified),
+        likes(user_id)
+      `,
+        { count: "exact" }
       )
       .order("created_at", { ascending: false })
       .range(from, to);
@@ -28,9 +45,20 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ count, payload: data }, { status: 200 });
+    // transform posts to include likeCount + isLiked
+    const posts = data.map((p) => ({
+      id: p.id,
+      content: p.content,
+      created_at: p.created_at,
+      updated_at: p.updated_at,
+      author: p.profiles,
+      likeCount: p.likes?.length || 0,
+      isLiked: p.likes?.some((l) => l.user_id === user.id) || false,
+    }));
+
+    return NextResponse.json({ count, payload: posts }, { status: 200 });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return NextResponse.json(
       { error: "Failed to fetch posts" },
       { status: 500 }
@@ -39,7 +67,7 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const supabase = await createServerSupabaseClient();
+  const supabase = await createClient();
 
   const {
     data: { user },

@@ -3,6 +3,8 @@ export interface AuthorProfile {
   name: string;
   username: string;
   profile_url: string;
+  is_verified: boolean;
+  created_at: string;
 }
 
 export interface Post {
@@ -11,7 +13,7 @@ export interface Post {
   content: string;
   created_at: string;
   updated_at: string;
-  profiles: AuthorProfile;
+  author: AuthorProfile;
 }
 
 export interface PostsResponse {

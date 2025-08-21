@@ -1,3 +1,5 @@
+// components/post/PostCardContainer.tsx
+
 import React from "react";
 import PostHeader from "./post-header";
 import PostBody from "./post-body";
@@ -9,13 +11,15 @@ interface PostCardProps {
 }
 
 function PostCard({ postData }: PostCardProps) {
-  console.log(postData);
-
   return (
     <div className="p-6 border-b-[1px] border-border">
-      <PostHeader postData={postData} />
+      <PostHeader postData={postData.author} createdAt={postData.created_at} />
       <PostBody postData={postData} />
-      <PostFooter />
+      <PostFooter
+        postId={postData.id}
+        initialLiked={postData.isLiked}
+        initialLikeCount={postData.likeCount}
+      />
     </div>
   );
 }

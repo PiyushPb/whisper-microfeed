@@ -1,15 +1,15 @@
+//page.tsx
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import PostCard from "@/components/post/PostCardContainer";
 import CreatePostContainer from "@/components/post/CreatePostContainer";
-import { useMutatePost } from "@/hooks/use-mutate-post";
 import PostBodySkeleton from "@/components/skeleton/PostBodySkeleton";
 import { Post } from "@/types/post";
+import { usePosts } from "@/hooks/usePosts"; // 👈 new hook
 import {
   Pagination,
   PaginationContent,
-  PaginationEllipsis,
   PaginationItem,
   PaginationLink,
   PaginationNext,
@@ -19,23 +19,15 @@ import {
 const MAX_POSTS_PER_PAGE = 10;
 
 function HomePage() {
-  const { getPosts, fetchingPosts } = useMutatePost();
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
 
-  const loadPosts = async (page: number) => {
-    setLoading(true);
-    const response = await getPosts(page, MAX_POSTS_PER_PAGE);
-    setPosts(response?.data || []);
-    setTotalPages(Math.ceil((response?.count || 0) / MAX_POSTS_PER_PAGE));
-    setLoading(false);
-  };
+  // ✅ fetch posts using the hook
+  const { posts, count, loading, error, refetch } = usePosts(
+    currentPage,
+    MAX_POSTS_PER_PAGE
+  );
 
-  useEffect(() => {
-    loadPosts(currentPage);
-  }, [currentPage]);
+  const totalPages = Math.ceil((count || 0) / MAX_POSTS_PER_PAGE);
 
   // Handle page changes
   const handlePageChange = (page: number) => {
@@ -45,56 +37,63 @@ function HomePage() {
 
   return (
     <div className="flex-1 w-full overflow-y-auto relative">
-      <CreatePostContainer refetchPosts={() => loadPosts(currentPage)} />
-      <div className="">
+      <CreatePostContainer refetchPosts={() => refetch()} />
+
+      <div>
         {loading ? (
           [...Array(MAX_POSTS_PER_PAGE)].map((_, i) => (
             <PostBodySkeleton key={i} />
           ))
+        ) : error ? (
+          <p className="text-center text-red-500 mt-5">{error}</p>
         ) : posts.length === 0 ? (
           <p className="text-center text-muted-foreground mt-5">
             No posts yet.
           </p>
         ) : (
-          posts.map((post, i) => <PostCard key={i} postData={post} />)
+          posts.map((post: Post) => <PostCard key={post.id} postData={post} />)
         )}
       </div>
 
       {/* Pagination controls */}
-      <div className="p-5">
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                href="#"
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-              />
-            </PaginationItem>
-            {/* Display page numbers */}
-            {Array.from({ length: totalPages }, (_, index) => index + 1).map(
-              (page) => (
-                <PaginationItem key={page}>
-                  <PaginationLink
-                    href="#"
-                    onClick={() => handlePageChange(page)}
-                    isActive={currentPage === page}
-                  >
-                    {page}
-                  </PaginationLink>
-                </PaginationItem>
-              )
-            )}
-            <PaginationItem>
-              <PaginationNext
-                href="#"
-                onClick={() => handlePageChange(currentPage + 1)} // Go to next page
-                disabled={currentPage === totalPages}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
+      {totalPages > 1 && (
+        <div className="p-5">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                />
+              </PaginationItem>
+
+              {/* Page numbers */}
+              {Array.from({ length: totalPages }, (_, index) => index + 1).map(
+                (page) => (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      href="#"
+                      onClick={() => handlePageChange(page)}
+                      isActive={currentPage === page}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                )
+              )}
+
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
     </div>
   );
 }

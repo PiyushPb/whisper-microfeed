@@ -17,14 +17,21 @@ import { Post } from "@/types/post";
 import { useAuth } from "@/context/AuthContext";
 import { calculatePostTime } from "@/utils/calculatePostTime";
 
-interface PostCardProps {
-  postData: Post;
+interface PostHeaderProps {
+  postData: {
+    id: string;
+    name: string;
+    username: string;
+    profile_url: string;
+    is_verified: boolean;
+  };
+  createdAt: string;
 }
 
-function PostHeader({ postData }: PostCardProps) {
-  const author_id = postData?.author_id;
+function PostHeader({ postData, createdAt }: PostHeaderProps) {
+  const author_id = postData?.id;
   const { user } = useAuth();
-  const timeAgo = calculatePostTime({ time: postData.created_at });
+  const timeAgo = calculatePostTime({ time: createdAt });
 
   return (
     <div>
@@ -33,20 +40,16 @@ function PostHeader({ postData }: PostCardProps) {
           {/* user image avatar */}
           <div className="w-[50px] h-[50px] rounded-full overflow-hidden">
             <img
-              src={
-                postData?.profiles?.profile_url || "/assets/image/avatar.jpg"
-              }
+              src={postData?.profile_url || "/assets/image/avatar.jpg"}
               alt=""
             />
           </div>
           {/* userName */}
           <div className="flex flex-col">
-            <h3 className="text-[1.2rem]">{postData?.profiles?.name}</h3>
+            <h3 className="text-[1.2rem]">{postData?.name}</h3>
             <div className="flex flex-row gap-1 items-center">
-              <p className="text-[14px] text-gray-600">
-                @{postData?.profiles?.username}
-              </p>
-              {postData?.profiles?.is_verified && (
+              <p className="text-[14px] text-gray-600">@{postData?.username}</p>
+              {postData?.is_verified && (
                 <GoVerified size={15} className="text-blue-500" />
               )}
             </div>

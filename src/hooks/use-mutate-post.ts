@@ -46,37 +46,9 @@ export function useMutatePost() {
     }
   }
 
-  async function getPosts(
-    page = 1,
-    limit = 10
-  ): Promise<GetPostsResponse | undefined> {
-    setFetchingPosts(true);
-    setError(null);
-
-    try {
-      const res = await fetch(`/api/posts?page=${page}&limit=${limit}`);
-      const data = await res.json();
-
-      if (!res.ok) throw new Error(data.error || "Failed to fetch posts");
-
-      return {
-        data: data.payload || data,
-        count: data.count,
-      };
-    } catch (err: unknown) {
-      setError(
-        err instanceof Error ? err.message : "An unknown error occurred."
-      );
-    } finally {
-      setFetchingPosts(false);
-    }
-  }
-
   return {
     createPost,
-    getPosts,
     loading,
-    fetchingPosts,
     error,
   };
 }

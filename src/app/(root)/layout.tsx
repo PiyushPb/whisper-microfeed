@@ -5,7 +5,7 @@ import RightSection from "@/components/app/RightSection";
 import Navbar from "@/components/ui/Navbar";
 import MobileNavbar from "@/components/ui/MobileNavbar";
 
-import { createServerSupabaseClient } from "@/lib/supabaseServer";
+import { createClient } from "@/lib/supabaseServer";
 import { redirect } from "next/navigation";
 import { AuthProvider } from "@/context/AuthContext";
 import { Toaster } from "react-hot-toast";
@@ -20,7 +20,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const supabase = await createServerSupabaseClient();
+  const supabase = await createClient();
 
   const {
     data: { user },
