@@ -6,9 +6,26 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { GoKebabHorizontal, GoLink, GoPencil, GoTrash } from "react-icons/go";
+import {
+  GoKebabHorizontal,
+  GoLink,
+  GoPencil,
+  GoTrash,
+  GoVerified,
+} from "react-icons/go";
+import { Post } from "@/types/post";
+import { useAuth } from "@/context/AuthContext";
+import { calculatePostTime } from "@/utils/calculatePostTime";
 
-function PostHeader() {
+interface PostCardProps {
+  postData: Post;
+}
+
+function PostHeader({ postData }: PostCardProps) {
+  const author_id = postData?.author_id;
+  const { user } = useAuth();
+  const timeAgo = calculatePostTime({ time: postData.created_at });
+
   return (
     <div>
       <div className="flex justify-between items-center">
@@ -16,18 +33,27 @@ function PostHeader() {
           {/* user image avatar */}
           <div className="w-[50px] h-[50px] rounded-full overflow-hidden">
             <img
-              src="https://media.licdn.com/dms/image/v2/D4D03AQFUXdU9BSUIrQ/profile-displayphoto-crop_800_800/B4DZhP6cxEGsAI-/0/1753687382984?e=1758758400&v=beta&t=Skkx3hucNzwwpK34xbkgjm_1EPDsgVjpkCdddmO1O-o"
+              src={
+                postData?.profiles?.profile_url || "/assets/image/avatar.jpg"
+              }
               alt=""
             />
           </div>
           {/* userName */}
           <div className="flex flex-col">
-            <h3 className="text-[1.2rem]">Piyush Pardeshi</h3>
-            <span className="text-[14px] text-gray-600">@piyush</span>
+            <h3 className="text-[1.2rem]">{postData?.profiles?.name}</h3>
+            <div className="flex flex-row gap-1 items-center">
+              <p className="text-[14px] text-gray-600">
+                @{postData?.profiles?.username}
+              </p>
+              {postData?.profiles?.is_verified && (
+                <GoVerified size={15} className="text-blue-500" />
+              )}
+            </div>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[12px] text-gray-500">2 min ago</span>
+          <span className="text-[12px] text-gray-500">{timeAgo}</span>
           <DropdownMenu>
             <DropdownMenuTrigger className="cursor-pointer outline-none focus:outline-none">
               <GoKebabHorizontal />
@@ -36,17 +62,22 @@ function PostHeader() {
               <DropdownMenuItem className="cursor-pointer">
                 <GoLink /> Share
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">
-                <GoPencil />
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="cursor-pointer"
-                variant="destructive"
-              >
-                <GoTrash />
-                Delete
-              </DropdownMenuItem>
+
+              {author_id === user?.id && (
+                <>
+                  <DropdownMenuItem className="cursor-pointer">
+                    <GoPencil />
+                    Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    variant="destructive"
+                  >
+                    <GoTrash />
+                    Delete
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

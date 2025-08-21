@@ -24,7 +24,13 @@ function LeftSection() {
   );
 }
 
-const ProfileCard = ({ user, loading }: { user: User; loading: boolean }) => {
+const ProfileCard = ({
+  user,
+  loading,
+}: {
+  user: User | null;
+  loading: boolean;
+}) => {
   if (loading) return <HomeProfileSkeletonLoader />;
 
   return (
