@@ -4,20 +4,22 @@
 import React, { useState } from "react";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
-import { useAuth } from "@/context/AuthContext"; // assumed
-import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 import { useMutatePost } from "@/hooks/use-mutate-post";
 
-const MAX_CONTENT_LENGTH = Number(
-  process.env.NEXT_PUBLIC_MAX_POST_CONTENT_LIMIT || 280
-);
+type CreatePostContainerProps = {
+  refetchPosts?: () => void;
+};
 
-function CreatePostContainer() {
+function CreatePostContainer({ refetchPosts }: CreatePostContainerProps) {
   const [content, setContent] = useState("");
   const [inputError, setInputError] = useState("");
   const { createPost, loading, error } = useMutatePost();
   const { user, loading: userLoading } = useAuth();
-  const router = useRouter();
+
+  const MAX_CONTENT_LENGTH = Number(
+    process.env.NEXT_PUBLIC_MAX_POST_CONTENT_LIMIT || 280
+  );
 
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newContent = e.target.value;
@@ -31,19 +33,16 @@ function CreatePostContainer() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(user);
     if (!user?.id) return;
 
     const trimmedContent = content.trim();
     if (!trimmedContent || trimmedContent.length > MAX_CONTENT_LENGTH) return;
 
-    const result = await createPost({
-      content: trimmedContent,
-    });
+    const result = await createPost({ content: trimmedContent });
 
     if (result?.id) {
       setContent("");
-      router.refresh();
+      refetchPosts?.(); // ✅ Trigger re-fetch of posts
     }
   };
 
