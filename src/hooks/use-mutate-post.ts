@@ -52,3 +52,38 @@ export function useMutatePost() {
     error,
   };
 }
+
+export function usePostDelete() {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  async function deletePost(postId: number) {
+    setLoading(true);
+    setError(null);
+
+    try {
+      setLoading(true);
+
+      const res = await fetch(`/api/posts/${postId}`, {
+        method: "DELETE",
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to delete post");
+
+      toast.success("Post deleted successfully!");
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return {
+    deletePost,
+    loading,
+    error,
+  };
+}

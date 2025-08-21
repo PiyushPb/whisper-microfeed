@@ -59,3 +59,38 @@ export function usePosts(page = 1, limit = 10) {
 
   return { posts, count, loading, error, refetch: fetchPosts };
 }
+
+export function useLikedPosts(page = 1, limit = 10) {
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [count, setCount] = useState<number>(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchPosts = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const res = await fetch("/api/users/liked?page=1&limit=10");
+      const data: GetPostsResponse = await res.json();
+
+      if (!res.ok)
+        throw new Error((data as any).error || "Failed to fetch posts");
+
+      setPosts(data.payload);
+      setCount(data.count);
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "An unknown error occurred."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchPosts();
+  }, [fetchPosts]);
+
+  return { posts, count, loading, error };
+}

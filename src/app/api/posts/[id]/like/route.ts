@@ -46,27 +46,4 @@ export async function POST(_req: Request, { params }: Ctx) {
   return NextResponse.json({ liked: true, likeCount }, { status: 200 });
 }
 
-export async function DELETE(_req: Request, { params }: Ctx) {
-  const supabase = await createClient();
-  const postId = params.id;
 
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-  if (authError || !user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  const { error } = await supabase
-    .from("likes")
-    .delete()
-    .eq("post_id", postId)
-    .eq("user_id", user.id);
-
-  if (error)
-    return NextResponse.json({ error: error.message }, { status: 500 });
-
-  const likeCount = await getLikeCount(supabase, postId);
-  return NextResponse.json({ liked: false, likeCount }, { status: 200 });
-}

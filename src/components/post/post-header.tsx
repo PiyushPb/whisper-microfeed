@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import React from "react";
+import React, { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,40 +13,55 @@ import {
   GoTrash,
   GoVerified,
 } from "react-icons/go";
-import { Post } from "@/types/post";
 import { useAuth } from "@/context/AuthContext";
 import { calculatePostTime } from "@/utils/calculatePostTime";
+import DeletePostConfirmation from "@/components/modals/deletePostConfirmation";
+import { usePostDelete } from "@/hooks/use-mutate-post";
 
 interface PostHeaderProps {
   postData: {
     id: string;
     name: string;
     username: string;
+    author_id: string;
     profile_url: string;
     is_verified: boolean;
   };
   createdAt: string;
+  post_id: string;
 }
 
-function PostHeader({ postData, createdAt }: PostHeaderProps) {
-  const author_id = postData?.id;
+function PostHeader({ postData, createdAt, post_id }: PostHeaderProps) {
   const { user } = useAuth();
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const { deletePost, loading, error } = usePostDelete();
   const timeAgo = calculatePostTime({ time: createdAt });
+
+  const handleDelete = async () => {
+    if (!postData?.id) return;
+
+    const result = await deletePost(post_id);
+    if (result) {
+      setIsDeleteDialogOpen(false);
+      window.location.reload();
+    }
+  };
 
   return (
     <div>
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-5">
-          {/* user image avatar */}
+          {/* User image avatar */}
           <div className="w-[50px] h-[50px] rounded-full overflow-hidden">
             <img
               src={postData?.profile_url || "/assets/image/avatar.jpg"}
               alt=""
             />
           </div>
-          {/* userName */}
+          {/* UserName */}
           <div className="flex flex-col">
             <h3 className="text-[1.2rem]">{postData?.name}</h3>
+            <span>{postData?.id}</span>
             <div className="flex flex-row gap-1 items-center">
               <p className="text-[14px] text-gray-600">@{postData?.username}</p>
               {postData?.is_verified && (
@@ -66,7 +81,7 @@ function PostHeader({ postData, createdAt }: PostHeaderProps) {
                 <GoLink /> Share
               </DropdownMenuItem>
 
-              {author_id === user?.id && (
+              {postData?.id === user?.id && (
                 <>
                   <DropdownMenuItem className="cursor-pointer">
                     <GoPencil />
@@ -75,6 +90,7 @@ function PostHeader({ postData, createdAt }: PostHeaderProps) {
                   <DropdownMenuItem
                     className="cursor-pointer"
                     variant="destructive"
+                    onClick={() => setIsDeleteDialogOpen(true)} // Open modal
                   >
                     <GoTrash />
                     Delete
@@ -85,6 +101,13 @@ function PostHeader({ postData, createdAt }: PostHeaderProps) {
           </DropdownMenu>
         </div>
       </div>
+
+      <DeletePostConfirmation
+        isOpen={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={handleDelete}
+        loading={loading}
+      />
     </div>
   );
 }

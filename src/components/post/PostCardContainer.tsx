@@ -11,9 +11,14 @@ interface PostCardProps {
 }
 
 function PostCard({ postData }: PostCardProps) {
+  console.log("PostCard:", postData);
   return (
     <div className="p-6 border-b-[1px] border-border">
-      <PostHeader postData={postData.author} createdAt={postData.created_at} />
+      <PostHeader
+        postData={postData.author}
+        createdAt={postData.created_at}
+        post_id={postData.id}
+      />
       <PostBody postData={postData} />
       <PostFooter
         postId={postData.id}

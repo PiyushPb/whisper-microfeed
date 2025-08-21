@@ -8,6 +8,7 @@ import { User } from "@/types/user";
 import { formatURL } from "@/utils/formatUrl";
 import { GoVerified } from "react-icons/go";
 import HomeProfileSkeletonLoader from "../skeleton/HomeProfileSkeletonLoader";
+import LogoutButton from "../auth/LogoutButton";
 
 function LeftSection() {
   const { user, loading } = useAuth();
@@ -17,7 +18,7 @@ function LeftSection() {
       <div className="w-full h-fit p-5 lg:h-[100px] flex justify-center items-center border-b-1 border-border">
         <h1 className="text-3xl text-center">@whisper</h1>
       </div>
-      <div className="p-10 hidden lg:block">
+      <div className="p-10 hidden lg:flex  flex-col justify-between">
         <ProfileCard user={user} loading={loading} />
       </div>
     </aside>
@@ -64,6 +65,9 @@ const ProfileCard = ({
           <TbExternalLink className="group-hover:text-blue-500" />
         </div>
       )}
+      <div className="mt-10">
+        <LogoutButton />
+      </div>
     </div>
   );
 };

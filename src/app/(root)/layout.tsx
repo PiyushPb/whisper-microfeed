@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "../globals.css";
-import LeftSection from "@/components/app/LeftSection";
-import RightSection from "@/components/app/RightSection";
+import LeftSection from "@/components/layout/LeftSection";
+import RightSection from "@/components/layout/RightSection";
 import Navbar from "@/components/ui/Navbar";
 import MobileNavbar from "@/components/ui/MobileNavbar";
 
