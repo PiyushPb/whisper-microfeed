@@ -57,7 +57,7 @@ function PostHeader({ postData, createdAt, post_id }: PostHeaderProps) {
   const handleCopy = async () => {
     //copy the post link to clipboard
     toast.success("Link copied to clipboard");
-    const postURL = appURL + `/p/${post_id}`;
+    const postURL = `https://whisper-micro-feed.vercel.app/p/${post_id}`;
     navigator.clipboard.writeText(postURL);
   };
 
