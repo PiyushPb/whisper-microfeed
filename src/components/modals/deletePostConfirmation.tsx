@@ -19,7 +19,7 @@ const DeletePostConfirmation: React.FC<DeletePostConfirmationProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-[99999]">
+    <section className="fixed inset-0 flex items-center justify-center bg-black/50 z-[99999]">
       <div className="bg-white rounded-lg shadow-lg p-6 w-96">
         <h3 className="text-xl font-semibold">Are you absolutely sure?</h3>
         <p className="text-sm text-gray-600 mt-2">
@@ -38,7 +38,7 @@ const DeletePostConfirmation: React.FC<DeletePostConfirmationProps> = ({
           </Button>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

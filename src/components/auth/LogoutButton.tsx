@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 import { logoutUser } from "@/lib/auth/actions";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
-import { ClipLoader } from "react-spinners"; // ✅ spinner
+import { BarLoader } from "react-spinners";
 
 function LogoutButton() {
   const router = useRouter();
@@ -12,6 +12,7 @@ function LogoutButton() {
 
   const handleLogout = async () => {
     setLoading(true);
+    console.log("Logout button clicked");
     try {
       await logoutUser();
       toast.success("Logout successful!");
@@ -32,7 +33,7 @@ function LogoutButton() {
         disabled={loading}
         className="flex items-center gap-2"
       >
-        {loading ? <ClipLoader size={20} color="#fff" /> : "Logout"}
+        {loading ? <BarLoader color="#fff" /> : "Logout"}
       </Button>
     </div>
   );
