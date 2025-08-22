@@ -1,7 +1,7 @@
 "use client";
 
 import { useModal } from "@/context/ModalContext";
-import DeletePostConfirmation from "./DeletePostConfirmation";
+import DeletePostConfirmation from "./deletePostConfirmation";
 import EditContentModal from "./EditContentModal";
 import { DeleteModalProps, EditModalProps } from "@/types/modalTypes";
 
