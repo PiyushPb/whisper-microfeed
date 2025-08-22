@@ -6,13 +6,16 @@ import { formatURL } from "@/utils/formatUrl";
 import { TbExternalLink } from "react-icons/tb";
 import LogoutButton from "./LogoutButton";
 import { User } from "@/types/user";
+import { useAuth } from "@/context/AuthContext";
 
 function ProfileCard({
   user,
   loading,
+  currentUser = false,
 }: {
   user: User | null;
   loading: boolean;
+  currentUser: boolean;
 }) {
   if (loading) return <HomeProfileSkeletonLoader />;
 
@@ -47,9 +50,11 @@ function ProfileCard({
           <TbExternalLink className="group-hover:text-blue-500" />
         </div>
       )}
-      <div className="mt-10">
-        <LogoutButton />
-      </div>
+      {currentUser && (
+        <div className="mt-10">
+          <LogoutButton />
+        </div>
+      )}
     </div>
   );
 }

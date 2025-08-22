@@ -13,7 +13,7 @@ function LeftSection() {
         <h1 className="text-3xl text-center">@whisper</h1>
       </div>
       <div className="p-10 hidden lg:flex  flex-col justify-between">
-        <ProfileCard user={user} loading={loading} />
+        <ProfileCard user={user} loading={loading} currentUser={true} />
       </div>
     </aside>
   );

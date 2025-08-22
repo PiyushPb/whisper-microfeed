@@ -61,7 +61,6 @@ export function usePosts(page = 1, limit = 10) {
         }
       }
 
-      // If here, data should be GetPostsResponse
       const response = data as GetPostsResponse;
       setPosts(response.payload);
       setCount(response.count);
@@ -122,4 +121,44 @@ export function useLikedPosts(page = 1, limit = 10) {
   }, [fetchPosts]);
 
   return { posts, count, loading, error };
+}
+
+export function useGetPostById() {
+  const [post, setPost] = useState<Post | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchPost = useCallback(async (postId: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const res = await fetch(`/api/posts/${postId}`);
+      const data = await res.json();
+
+      if (!res.ok) {
+        if (isErrorResponse(data)) {
+          throw new Error(data.error);
+        } else {
+          throw new Error("Failed to fetch post");
+        }
+      }
+
+      const response = data as Post;
+      setPost(response);
+    } catch (error) {
+      setError(
+        error instanceof Error ? error.message : "An unknown error occurred."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  return {
+    post,
+    loading,
+    error,
+    fetchPost,
+  };
 }

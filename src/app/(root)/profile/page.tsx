@@ -22,7 +22,11 @@ function ProfilePage() {
         {loading && <HomeProfileSkeletonLoader />}
         {error && <p style={{ color: "red" }}>Error: {error}</p>}
         {profile ? (
-          <ProfileCard user={profile?.user} loading={loading} />
+          <ProfileCard
+            user={profile?.user}
+            loading={loading}
+            currentUser={true}
+          />
         ) : (
           !loading && <p>No profile data found.</p>
         )}

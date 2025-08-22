@@ -54,7 +54,7 @@ function CreatePostContainer({ refetchPosts }: CreatePostContainerProps) {
             <div className="w-full h-full bg-gray-200 animate-pulse"></div>
           ) : (
             <img
-              src={user?.profile_url}
+              src={user?.profile_url || ""}
               alt="Profile"
               className="w-full h-full object-cover"
             />

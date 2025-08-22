@@ -6,6 +6,7 @@ import { useProfile } from "@/hooks/useProfile";
 import HomeProfileSkeletonLoader from "@/components/skeleton/HomeProfileSkeletonLoader";
 import PostListContainer from "@/components/post/PostListContainer";
 import { useParams } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 // Optional: a simple "User Not Found" component
 function UserNotFound() {
@@ -20,6 +21,10 @@ function UserNotFound() {
 function ProfilePage() {
   const { fetchProfile, loading, profile, error } = useProfile();
   const params = useParams();
+
+  const { user: currentUser } = useAuth();
+
+  const isCurrentUser = currentUser?.username === params.username;
 
   const username = Array.isArray(params.username)
     ? params.username[0]
@@ -40,7 +45,13 @@ function ProfilePage() {
 
         {!loading && !user && <UserNotFound />}
 
-        {!loading && user && <ProfileCard user={user} loading={loading} />}
+        {!loading && user && (
+          <ProfileCard
+            user={user}
+            loading={loading}
+            currentUser={isCurrentUser}
+          />
+        )}
       </div>
 
       <div>

@@ -19,6 +19,8 @@ import { useAuth } from "@/context/AuthContext";
 import { calculatePostTime } from "@/utils/calculatePostTime";
 import { useModal } from "@/context/ModalContext";
 import { usePostDelete } from "@/hooks/use-mutate-post";
+import Link from "next/link";
+import toast from "react-hot-toast";
 
 interface PostHeaderProps {
   postData: {
@@ -36,6 +38,7 @@ function PostHeader({ postData, createdAt, post_id }: PostHeaderProps) {
   const { user } = useAuth();
   const { openModal, closeModal } = useModal();
   const { deletePost, loading } = usePostDelete();
+  const appURL = process.env.NEXT_PUBLIC_BASE_URL;
 
   const timeAgo = calculatePostTime({ time: createdAt });
 
@@ -51,6 +54,13 @@ function PostHeader({ postData, createdAt, post_id }: PostHeaderProps) {
     console.log("Edit post");
   };
 
+  const handleCopy = async () => {
+    //copy the post link to clipboard
+    toast.success("Link copied to clipboard");
+    const postURL = appURL + `/p/${post_id}`;
+    navigator.clipboard.writeText(postURL);
+  };
+
   return (
     <div className="flex justify-between items-center">
       <div className="flex items-center gap-5">
@@ -62,12 +72,14 @@ function PostHeader({ postData, createdAt, post_id }: PostHeaderProps) {
         </div>
         <div className="flex flex-col">
           <h3 className="text-[1.2rem]">{postData?.name}</h3>
-          <div className="flex flex-row gap-1 items-center">
-            <p className="text-[14px] text-gray-600">@{postData?.username}</p>
-            {postData?.is_verified && (
-              <GoVerified size={15} className="text-blue-500" />
-            )}
-          </div>
+          <Link href={`/u/${postData?.username}`}>
+            <div className="flex flex-row gap-1 items-center">
+              <p className="text-[14px] text-gray-600">@{postData?.username}</p>
+              {postData?.is_verified && (
+                <GoVerified size={15} className="text-blue-500" />
+              )}
+            </div>
+          </Link>
         </div>
       </div>
 
@@ -78,7 +90,7 @@ function PostHeader({ postData, createdAt, post_id }: PostHeaderProps) {
             <GoKebabHorizontal />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleCopy}>
               <GoLink /> Share
             </DropdownMenuItem>
             {postData?.id === user?.id && (

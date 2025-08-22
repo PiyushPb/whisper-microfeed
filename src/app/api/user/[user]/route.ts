@@ -21,7 +21,7 @@ export async function GET(req: Request, context: Ctx) {
   // 1 Fetch user profile by username with extra fields
   const { data: userProfile, error: userError } = await supabase
     .from("profiles")
-    .select("id, username, created_at, name, is_verified, profile_url")
+    .select("id, username, bio, url, created_at, name, is_verified, profile_url")
     .eq("username", formattedUsername)
     .maybeSingle();
 
