@@ -6,6 +6,7 @@ type Ctx = { params: Promise<{ user: string }> };
 export async function GET(req: Request, context: Ctx) {
   const supabase = await createClient();
   const { user: username } = await context.params;
+  const formattedUsername = username.toLowerCase();
 
   // Extract current user ID from header (adjust as per your auth system)
   const currentUserId = req.headers.get("x-user-id") || null;
@@ -21,7 +22,7 @@ export async function GET(req: Request, context: Ctx) {
   const { data: userProfile, error: userError } = await supabase
     .from("profiles")
     .select("id, username, created_at, name, is_verified, profile_url")
-    .eq("username", username)
+    .eq("username", formattedUsername)
     .maybeSingle();
 
   if (userError) {
@@ -31,7 +32,7 @@ export async function GET(req: Request, context: Ctx) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  // 2 Fetch posts
+  // 2 Fetch posts (all posts, not just liked)
   const { data: postsData, error: postsError } = await supabase
     .from("posts")
     .select(
@@ -47,7 +48,7 @@ export async function GET(req: Request, context: Ctx) {
         is_verified,
         profile_url
       ),
-      likes:likes!inner(post_id)
+      likes:likes(post_id)
     `
     )
     .eq("author_id", userProfile.id)
