@@ -1,6 +1,6 @@
 // components/post/PostListContainer.tsx
 import React from "react";
-import { Post } from "@/types/post";
+import { Post } from "@/schemas/post";
 import PostCard from "@/components/post/PostCardContainer";
 import PostBodySkeleton from "@/components/skeleton/PostBodySkeleton";
 import {
@@ -31,7 +31,7 @@ const PostListContainer: React.FC<PostListContainerProps> = ({
   currentPage,
   totalPages,
   onPageChange,
-  fallBackText,
+  fallBackText = "No posts found",
 }) => {
   return (
     <div className="w-full">

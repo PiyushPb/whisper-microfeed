@@ -28,18 +28,18 @@ function SearchPage() {
       const data = await res.json();
       setPosts(data.payload);
       setCount(data.count ?? 0);
-    } catch (error: any) {
+    } catch (error) {
+      console.log(error);
       setError("Something went wrong while fetching posts.");
     } finally {
       setLoading(false);
     }
   };
 
-  // Wrap with debounce
   const debouncedSearch = useCallback(
     debounce((searchValue: string, page: number) => {
       handleSearch(searchValue, page);
-    }, 500), // 500ms delay
+    }, 500),
     []
   );
 
@@ -58,7 +58,7 @@ function SearchPage() {
   };
 
   return (
-    <section className="p-5">
+    <section>
       <SearchBar search={search} setSearch={setSearch} />
       <PostListContainer
         posts={posts}

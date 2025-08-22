@@ -25,6 +25,20 @@ type GetPostsResponse = {
   count: number;
 };
 
+type ErrorResponse = {
+  error: string;
+};
+
+// Type guard to check if data is ErrorResponse
+function isErrorResponse(data: unknown): data is ErrorResponse {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    "error" in data &&
+    typeof data.error === "string"
+  );
+}
+
 export function usePosts(page = 1, limit = 10) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [count, setCount] = useState<number>(0);
@@ -37,13 +51,20 @@ export function usePosts(page = 1, limit = 10) {
       setError(null);
 
       const res = await fetch(`/api/posts?page=${page}&limit=${limit}`);
-      const data: GetPostsResponse = await res.json();
+      const data: unknown = await res.json();
 
-      if (!res.ok)
-        throw new Error((data as any).error || "Failed to fetch posts");
+      if (!res.ok) {
+        if (isErrorResponse(data)) {
+          throw new Error(data.error);
+        } else {
+          throw new Error("Failed to fetch posts");
+        }
+      }
 
-      setPosts(data.payload);
-      setCount(data.count);
+      // If here, data should be GetPostsResponse
+      const response = data as GetPostsResponse;
+      setPosts(response.payload);
+      setCount(response.count);
     } catch (err: unknown) {
       setError(
         err instanceof Error ? err.message : "An unknown error occurred."
@@ -71,22 +92,30 @@ export function useLikedPosts(page = 1, limit = 10) {
       setLoading(true);
       setError(null);
 
-      const res = await fetch("/api/users/liked?page=1&limit=10");
-      const data: GetPostsResponse = await res.json();
+      const res = await fetch(
+        `/api/posts/likedPosts?page=${page}&limit=${limit}`
+      );
+      const data: unknown = await res.json();
 
-      if (!res.ok)
-        throw new Error((data as any).error || "Failed to fetch posts");
+      if (!res.ok) {
+        if (isErrorResponse(data)) {
+          throw new Error(data.error);
+        } else {
+          throw new Error("Failed to fetch posts");
+        }
+      }
 
-      setPosts(data.payload);
-      setCount(data.count);
-    } catch (error) {
+      const response = data as GetPostsResponse;
+      setPosts(response.payload);
+      setCount(response.count);
+    } catch (err: unknown) {
       setError(
-        error instanceof Error ? error.message : "An unknown error occurred."
+        err instanceof Error ? err.message : "An unknown error occurred."
       );
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [page, limit]);
 
   useEffect(() => {
     fetchPosts();

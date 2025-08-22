@@ -25,7 +25,6 @@ interface PostHeaderProps {
     id: string;
     name: string;
     username: string;
-    author_id: string;
     profile_url: string;
     is_verified: boolean;
   };
@@ -35,7 +34,7 @@ interface PostHeaderProps {
 
 function PostHeader({ postData, createdAt, post_id }: PostHeaderProps) {
   const { user } = useAuth();
-  const { openModal } = useModal();
+  const { openModal, closeModal } = useModal();
   const { deletePost, loading } = usePostDelete();
 
   const timeAgo = calculatePostTime({ time: createdAt });
@@ -43,7 +42,7 @@ function PostHeader({ postData, createdAt, post_id }: PostHeaderProps) {
   const handleDelete = async () => {
     const result = await deletePost(post_id);
     if (result) {
-      openModal(null); // close after deletea
+      closeModal();
       window.location.reload();
     }
   };

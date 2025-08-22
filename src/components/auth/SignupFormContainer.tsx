@@ -44,10 +44,8 @@ function SignupFormContainer() {
     try {
       await signupUser(formData);
       router.push("/");
-    } catch (err: any) {
-      if (err?.fieldErrors) {
-        setFormErrors(err.fieldErrors);
-      } else if (err instanceof Error) {
+    } catch (err) {
+      if (err instanceof Error) {
         setError(err.message);
       } else {
         setError("Signup failed");

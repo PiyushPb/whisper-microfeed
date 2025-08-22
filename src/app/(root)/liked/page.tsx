@@ -33,6 +33,7 @@ function LikedPage() {
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}
+        fallBackText="No posts liked by you"
       />
     </div>
   );

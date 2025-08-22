@@ -1,4 +1,4 @@
-import { Post } from "@/types/post";
+import { Post } from "@/schemas/post";
 import React from "react";
 
 interface PostCardProps {

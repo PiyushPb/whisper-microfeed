@@ -15,7 +15,7 @@ export const navLinks = [
     icon: GoHeart, // Reference to the GoHeart component
   },
   {
-    href: "/",
+    href: "/profile",
     icon: GoPerson, // Reference to the GoPerson component
   },
 ];

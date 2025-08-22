@@ -55,25 +55,32 @@ export async function GET(req: Request) {
     }
 
     // normalize format
-    const posts = data.map((like) => {
-      const p = Array.isArray(like.posts) ? like.posts[0] : like.posts;
+    const posts = data
+      .map((like) => {
+        const p = Array.isArray(like.posts) ? like.posts[0] : like.posts;
 
-      return {
-        id: p.id,
-        content: p.content,
-        created_at: p.created_at,
-        updated_at: p.updated_at,
-        author: {
-          id: p.profiles.id,
-          name: p.profiles.name,
-          username: p.profiles.username,
-          is_verified: p.profiles.is_verified,
-          profile_url: p.profiles.profile_url,
-        },
-        likeCount: p.likes?.length || 0,
-        isLiked: p.likes?.some((l) => l.user_id === user.id) || false,
-      };
-    });
+        if (!p) return null;
+
+        // profiles might be array or single object depending on Supabase join behavior
+        const profile = Array.isArray(p.profiles) ? p.profiles[0] : p.profiles;
+
+        return {
+          id: p.id,
+          content: p.content,
+          created_at: p.created_at,
+          updated_at: p.updated_at,
+          author: {
+            id: profile.id,
+            name: profile.name,
+            username: profile.username,
+            is_verified: profile.is_verified,
+            profile_url: profile.profile_url,
+          },
+          likeCount: p.likes?.length || 0,
+          isLiked: p.likes?.some((l) => l.user_id === user.id) || false,
+        };
+      })
+      .filter(Boolean); // remove nulls in case `posts` is null
 
     return NextResponse.json({ count, payload: posts }, { status: 200 });
   } catch (error) {

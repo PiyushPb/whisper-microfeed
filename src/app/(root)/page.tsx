@@ -1,7 +1,7 @@
 // page.tsx
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import CreatePostContainer from "@/components/post/CreatePostContainer";
 import { usePosts } from "@/hooks/usePosts"; // Hook to fetch posts
 import PostListContainer from "@/components/post/PostListContainer";
@@ -42,6 +42,7 @@ function HomePage() {
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}
+        fallBackText="No posts found"
       />
     </div>
   );

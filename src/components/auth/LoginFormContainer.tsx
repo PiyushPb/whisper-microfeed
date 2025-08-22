@@ -33,10 +33,8 @@ function LoginFormContainer() {
     try {
       await loginUser(formData);
       router.push("/"); // redirect after login
-    } catch (err: any) {
-      if (err?.fieldErrors) {
-        setFormErrors(err.fieldErrors);
-      } else if (err instanceof Error) {
+    } catch (err) {
+      if (err instanceof Error) {
         setError(err.message);
       } else {
         setError("Login failed");

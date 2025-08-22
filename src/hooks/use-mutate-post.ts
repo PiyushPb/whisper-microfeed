@@ -1,21 +1,12 @@
 "use client";
 
+import { CreatePostPayload, Post } from "@/schemas/post";
 import { useCallback, useState } from "react";
-import { CreatePostPayload, Post } from "@/types/post";
 import toast from "react-hot-toast";
-
-// Types
-type GetPostsResponse = {
-  data: Post[];
-  count?: number;
-};
 
 export function useMutatePost() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // For fetching posts
-  const [fetchingPosts, setFetchingPosts] = useState(true);
 
   async function createPost({
     content,
@@ -59,7 +50,7 @@ export function usePostDelete() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function deletePost(postId: number) {
+  async function deletePost(postId: string) {
     setLoading(true);
     setError(null);
 

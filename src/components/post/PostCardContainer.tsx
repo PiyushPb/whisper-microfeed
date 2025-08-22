@@ -4,7 +4,7 @@ import React from "react";
 import PostHeader from "./post-header";
 import PostBody from "./post-body";
 import PostFooter from "./post-footer";
-import { Post } from "@/types/post";
+import { Post } from "@/schemas/post";
 
 interface PostCardProps {
   postData: Post;
@@ -22,8 +22,8 @@ function PostCard({ postData }: PostCardProps) {
       <PostBody postData={postData} />
       <PostFooter
         postId={postData.id}
-        initialLiked={postData.isLiked}
-        initialLikeCount={postData.likeCount}
+        initialLiked={postData.isLiked ?? false}
+        initialLikeCount={postData.likeCount ?? 0}
       />
     </div>
   );

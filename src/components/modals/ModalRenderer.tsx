@@ -3,6 +3,7 @@
 import { useModal } from "@/context/ModalContext";
 import DeletePostConfirmation from "./DeletePostConfirmation";
 import EditContentModal from "./EditContentModal";
+import { DeleteModalProps, EditModalProps } from "@/types/modalTypes";
 
 export default function ModalRenderer() {
   const { modal, closeModal } = useModal();
@@ -10,26 +11,30 @@ export default function ModalRenderer() {
   if (!modal.type) return null;
 
   switch (modal.type) {
-    case "delete":
+    case "delete": {
+      const props = modal.props as DeleteModalProps;
       return (
         <DeletePostConfirmation
           isOpen={true}
           onClose={closeModal}
-          onConfirm={modal.props?.onConfirm}
-          loading={modal.props?.loading || false}
+          onConfirm={props.onConfirm}
+          loading={props.loading || false}
         />
       );
+    }
 
-    case "edit":
+    case "edit": {
+      const props = modal.props as EditModalProps;
       return (
         <EditContentModal
-          post_id={modal.props?.post_id}
           isOpen={true}
           onClose={closeModal}
-          onConfirm={modal.props?.onConfirm}
-          loading={modal.props?.loading || false}
+          post_id={props.post_id}
+          onConfirm={props.onConfirm}
+          loading={props.loading || false}
         />
       );
+    }
 
     default:
       return null;

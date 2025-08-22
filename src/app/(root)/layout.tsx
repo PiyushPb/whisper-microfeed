@@ -53,7 +53,6 @@ export default async function RootLayout({
             </main>
 
             <ModalRenderer />
-            <EditContentModal />
           </ModalProvider>
         </AuthProvider>
       </body>

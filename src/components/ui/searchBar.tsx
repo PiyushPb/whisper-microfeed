@@ -13,7 +13,7 @@ function SearchBar({
   };
 
   return (
-    <div>
+    <div className="p-5 border-b-[1px] border-border">
       <Input
         type="search"
         placeholder="Search"
